@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+data/shp/
+
+
+#tables to ignore
+data/tables/nashville_airbnb/calendar*
+data/tables/nashville_airbnb/reviews*
+nashville.qgz
