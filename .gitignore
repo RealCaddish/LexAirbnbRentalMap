@@ -110,3 +110,6 @@ data/shp/
 data/tables/nashville_airbnb/calendar*
 data/tables/nashville_airbnb/reviews*
 nashville.qgz
+
+data/articles/shp.zip
+data/census_data.qgz
