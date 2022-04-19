@@ -11,8 +11,8 @@
   - F. Aesthetics and Design Considerations
   - G. Conclusion
   - </ul>
-    <p>The rise and dominance of Airbnb in the share economy has opened the door to fresh deserved criticism concerning its role in local rental property supply, general property valuations, and a phenomenon known as 'touristification.' This project seeks to address Nashville, Tennessee's Airbnb footprint and how its effects on rental property supply are permeating throughout the city.  </p>
-    <p>By utilizing data supplied by the American Community Survey Data as well as data scraping by Inside Airbnb, this project seeks to understand how Airbnb has affected local rental property supply in terms of rental affordability.</p>
+    <p>The rise and dominance of Airbnb's in the share economy has opened the door to fresh criticism concerning its role in local rental property supply, general property valuations, and its contribution to the problematic effect known as 'touristification.' This project seeks to address Nashville, Tennessee's Airbnb footprint and how its effects on rental property supply are permeating throughout the city.  </p>
+    <p>By utilizing data supplied by the American Community Survey Data as well as data provided by Inside Airbnb, this project seeks to understand the affects of Airbnb on local rental property supply by understanding Nashville's vacancy rate, as well as other household characteristics related to the city.</p>
 
 ## References
 
