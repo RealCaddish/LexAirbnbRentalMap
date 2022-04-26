@@ -1,0 +1,32 @@
+{
+  "name": "lexairbnbrentalmap",
+  "version": "1.0.0",
+  "description": "airbnb data mapping project for nashville, tn",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RealCaddish/LexAirbnbRentalMap.git"
+  },
+  "author": "Nathaniel R Deaton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RealCaddish/LexAirbnbRentalMap/issues"
+  },
+  "homepage": "https://github.com/RealCaddish/LexAirbnbRentalMap#readme",
+  "devDependencies": {
+    "css-loader": "^6.7.1",
+    "csv-loader": "^3.0.3",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "xml-loader": "^1.2.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
