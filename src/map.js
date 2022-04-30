@@ -1,4 +1,4 @@
-"use strict"
+
 import listings from '../data/csv/listings_cleaned.csv';
 import L from 'leaflet';
 

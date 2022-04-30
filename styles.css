@@ -3,3 +3,22 @@
   height: 1000px;
   width: 100%;
 }
+
+
+h1 {
+  color: #460909;
+  font-family: arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 0px;
+  margin-bottom: 1px;
+}
+
+h2 {
+  color: #0e0303;
+  font-family: arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 0px;
+  margin-bottom: 1px;
+}

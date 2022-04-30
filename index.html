@@ -25,28 +25,28 @@
 
 
 
+
+
   <!--Bootstrap CDN-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
   </script>
-
   <!--Leaflet CDN -->
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
     crossorigin=""></script>
-
   <!--<script scr="map.js"></script>-->
 
   <!--Omnivore CDN-->
   <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
-
-  <!--D3 js-->
+  <!--D3-fetch module -->
   <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
-
   <!--topojson-->
   <script src="https://unpkg.com/topojson@3"></script>
 
-
+  <!--jquery CDN -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 </body>
 <script>
   // set options for the map object
@@ -61,15 +61,72 @@
   // creating the map object
   const map = L.map('map', options);
 
+  //jquery calls to add the json files and subsequent drawMap function 
+
+  $.when(
+    $.getJSON('data/json/blocks.json'),
+    $.getJSON('data/json/listings_cleaned.json')
+  ).done(function (blockData, listingData) {
+    drawMap(blockData, listingData)
+  });
+
+
+  //drawMap function to add features 
+
+  function drawMap(blockData, listingData) {
+
+    // add Nashville block-level data with joined occupancy data 
+    L.geoJson(blockData, {
+      style: blockOptions,
+      onEachFeature: function (feature, layer) {
+        let tooltip = `<h2>${feature.properties.NAME20}</h2>
+        <h2>Percent of Households Surveyed Occupied: ${feature.properties.percent_oc}%</h2>
+        <h2>Percent of Households Surveyed Vacant: ${feature.properties.percent_va}%</h2>`
+        layer.bindTooltip(tooltip, {
+          sticky: true,
+          className: 'tooltip'
+        });
+        layer.on('mouseover', function (e) {
+          this.setStyle({
+            fillOpacity: .1,
+            color: 'yellow',
+            weight: 2
+          })
+        });
+        layer.on('mouseout', function (e) {
+          this.setStyle(blockOptions);
+        });
+      }
+    }).addTo(map)
+
+    L.circleMarker(listingData).addTo(map)
+
+
+  }
+//     // omnivore call to add airbnb point csv file 
+// omnivore.csv('data/csv/listings_cleaned.csv').on('ready', function(e) {
+//   // access to GeoJSON
+//   console.log(e.target.toGeoJSON())
+// })
+// .on('error', function(e) {
+//   console.log(e.error[0].message)
+// }).addTo(map);
+
 
   // display Carto basemap tiles with light features and labels
   const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
+
   tiles.addTo(map);
 
-
+  const blockOptions = {
+    fillColor: '#606060',
+    fillOpacity: .2,
+    weight: .6,
+    color: '#000000'
+  };
 </script>
 
 </html>
