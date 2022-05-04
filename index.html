@@ -19,13 +19,21 @@
 </head>
 
 <body>
-  <h1>Nashville Hello World</h1>
-  <div id="map">
+  <div class="container-fluid">
+    <div class="row">
+
+      <div class="col-sm-2">
+        Col 1
+      </div>
+      <div class="col-sm-10">
+        Col 2
+        <div id="map">
+          <h1>Nashville Hello World</h1>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-
-
-
 
   <!--Bootstrap CDN-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
@@ -35,15 +43,10 @@
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
     crossorigin=""></script>
-  <!--<script scr="map.js"></script>-->
-
-  <!--Omnivore CDN-->
-  <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
-  <!--D3-fetch module -->
-  <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
+  <!--D3 library-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.4.4/d3.min.js"></script>
   <!--topojson-->
   <script src="https://unpkg.com/topojson@3"></script>
-
   <!--jquery CDN -->
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -61,72 +64,99 @@
   // creating the map object
   const map = L.map('map', options);
 
-  //jquery calls to add the json files and subsequent drawMap function 
+  // load in data with d3 fetch
+  const blocksDataRaw = d3.json('/data/geojson/blocks_census_airbnb_joined.geojson');
+  const listingsDataRaw = d3.csv('/data/csv/listings_cleaned.csv')
 
-  $.when(
-    $.getJSON('data/json/blocks.json'),
-    $.getJSON('data/json/listings_cleaned.json')
-  ).done(function (blockData, listingData) {
-    drawMap(blockData, listingData)
-  });
+  // promise statement to call an array of data variables then proceed to mapping function
+  Promise.all([blocksDataRaw, listingsDataRaw]).then(drawMap);
 
+  function drawMap(data) {
 
-  //drawMap function to add features 
+    // display Carto basemap tiles with light features and labels
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
 
-  function drawMap(blockData, listingData) {
+    // add basemap tiles to map
+    tiles.addTo(map);
 
-    // add Nashville block-level data with joined occupancy data 
-    L.geoJson(blockData, {
-      style: blockOptions,
+    const blocks = data[0];
+    const listings = data[1]
+
+    console.log(blocks)
+    console.log(listings)
+
+    // function for colors of choropleth using Natural Jenks for airbnb points in polygons
+    function getColor(d) {
+
+      return d > 171 ? '#800026' :
+        d > 85 ? '#BD0026' :
+        d > 43 ? '#E31A1C' :
+        d > 14 ? '#FC4E2A' :
+        '#FFEDA0';
+    }
+
+    // create choropleth from blocks features
+    function style(feature) {
+
+      return {
+        fillColor: getColor(feature.properties.airbnbs),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '4',
+        fillOpacity: 0.7
+      }
+    }
+
+    L.geoJson(blocks, {
+      style: style,
       onEachFeature: function (feature, layer) {
-        let tooltip = `<h2>${feature.properties.NAME20}</h2>
-        <h2>Percent of Households Surveyed Occupied: ${feature.properties.percent_oc}%</h2>
-        <h2>Percent of Households Surveyed Vacant: ${feature.properties.percent_va}%</h2>`
+
+        let tooltip = `<h1>Block Group:</h1>
+                 <h2>${feature.properties.BLKGRPCE}`;
+
+        // bind tooltip 
         layer.bindTooltip(tooltip, {
           sticky: true,
           className: 'tooltip'
         });
+
+        // visual affordance on mouseover 
         layer.on('mouseover', function (e) {
           this.setStyle({
-            fillOpacity: .1,
-            color: 'yellow',
+            fillOpacity: .8,
+            color: '#C63030',
             weight: 2
-          })
-        });
-        layer.on('mouseout', function (e) {
-          this.setStyle(blockOptions);
-        });
+          });
+        })
+        // return style back to original 
+        layer.on('mouseout', function(feature) {
+          feature.resetStyle
+        })
       }
     }).addTo(map)
 
-    L.circleMarker(listingData).addTo(map)
+    // add event listener to highlight blocks on mouseover 
+    function highlightFeature(e) {
+      var layer = e.target;
 
+      layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+      });
+    }
+
+    // event listener for mouseout
+    function resetHighlight(e) {
+      geojson.resetStyle(e.target);
+    };
 
   }
-//     // omnivore call to add airbnb point csv file 
-// omnivore.csv('data/csv/listings_cleaned.csv').on('ready', function(e) {
-//   // access to GeoJSON
-//   console.log(e.target.toGeoJSON())
-// })
-// .on('error', function(e) {
-//   console.log(e.error[0].message)
-// }).addTo(map);
-
-
-  // display Carto basemap tiles with light features and labels
-  const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  });
-
-  tiles.addTo(map);
-
-  const blockOptions = {
-    fillColor: '#606060',
-    fillOpacity: .2,
-    weight: .6,
-    color: '#000000'
-  };
 </script>
 
 </html>
