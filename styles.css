@@ -1,53 +1,59 @@
-#map {
-  border: 3px solid black;
-  height: 1000px;
-  width: 100%;
+body {
+  background: #20282e;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
 }
-
 
 h1 {
-  color: #460909;
-  font-family: arial, sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 0px;
-  margin-bottom: 1px;
+  font-weight: 800;
 }
 
-h2 {
-  color: #0e0303;
-  font-family: arial, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 0px;
-  margin-bottom: 1px;
+p {
+  line-height: 1.7rem;
 }
 
-.info {
-  padding: 6px 8px;
-  font: 14px/16px Arial, Helvetica, sans-serif;
-  background: white;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+#map {
+  height: 80vh;
+  background: #20282e;
+}
+
+#legend {
+  font-size: 1rem;
   border-radius: 5px;
+  max-width: 200px;
+  font-family: 'Open Sans', sans-serif;
 }
-.info h4 {
-  margin: 0 0 5px;
-  color: #777;
-}
-.legend {
-  line-height: 18px;
-  color: #555;
-}
-.legend i {
-  width: 18px;
-  height: 18px;
+
+#legend span {
+  width: 20px;
+  height: 20px;
   float: left;
-  margin-right: 8px;
-  opacity: 0.7;
+  margin: 0 10px 4px 0;
 }
-.cov_sel {
-  padding: 5px 5px 5px 5px;
-  border-radius: 2px;
-  border-color: brown;
+
+#legend label {
+  font-size: 0.9rem;
 }
+
+#legend label:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+
+  aside {
+      height: 80vh;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {}

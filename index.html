@@ -20,19 +20,51 @@
 
 <body>
   <div class="container-fluid">
-    <div class="row">
-
-      <div class="col-sm-2">
-        Col 1
+    <header class="row bg-dark text-white py-3">
+      <div class="col">
+        <h1>Map title</h1>
       </div>
-      <div class="col-sm-10">
-        Col 2
-        <div id="map">
-          <h1>Nashville Hello World</h1>
-        </div>
-      </div>
-    </div>
+    </header>
 
+    <section class="row">
+      <div class="col-md-8 col-lg-9 col-xl-10 order-md-2 px-0">
+        <div id="map"></div>
+      </div>
+      <aside id="about" class="col-md-4 col-lg-3 col-xl-2 order-md-1 text-white py-2 pl-3 bg-secondary overflow-auto">
+        <section>
+          <h3 class="py-2">subtitle</h3>
+          <p>A fan brush is a fantastic piece of equipment. Use it. Make friends with it. We're not trying to teach you
+            a thing to copy. We're just here to teach you a technique, then let you loose into the world. We'll put a
+            happy little sky in here.</p>
+          <p>You are only limited by your imagination. We'll do another happy little painting. Work on one thing at a
+            time. Don't get carried away - we have plenty of time. Look at them little rascals. We'll put all the little
+            clouds in and let them dance around and have fun. You can spend all day playing with mountains.</p>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="row bg-dark text-white py-3">
+      <div class="col">
+        <ul class="list-unstyled">
+          <li>authored by <a href="#">NAME</a></li>
+          <li>Date of authored map</li>
+          <li>data source: <a href="#">data source</a></li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+
+  <!-- legend is outside of container-fluid and will be dynamically added to map -->
+  <div class="bg-secondary py-2 px-3 ml-3 mt-3 text-white" id="legend"></div>
+
+  <!-- ui is outside of container-fluid and will be dynamically added to map -->
+  <div class="form-group mr-3 mt-3" id="dropdown-ui">
+    <label>Choose a data attribute to learn more</label>
+    <select class="form-control bg-primary text-white">
+      <option value="airbnbs" selected>airbnbs by block group</option>
+      <option value="occ_percent">percent of units occupied</option>
+      <option value="vaca_percent">percent of units vacant</option>
+    </select>
   </div>
 
   <!--Bootstrap CDN-->
@@ -50,6 +82,8 @@
   <!--jquery CDN -->
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <!--simple statistics CDN-->
+  <script src='https://unpkg.com/simple-statistics@7.7.5/dist/simple-statistics.min.js'></script>
 </body>
 <script>
   // set options for the map object
@@ -88,6 +122,49 @@
     console.log(blocks)
     console.log(listings)
 
+    // create Leaflet data layer and add to map
+    const blockGroups = L.geoJson(data, {
+      // style counties with initial default path options
+      style: function (feature) {
+        return {
+          color: '#20282e',
+          weight: 2,
+          fillOpacity: 1,
+          fillColor: '#1f78b4'
+        };
+      },
+      // add hover/touch functionality to each feature layer
+      onEachFeature: function (feature, layer) {
+
+        // when mousing over a layer
+        layer.on('mouseover', function () {
+
+          // change the stroke color and bring that element to the front
+          layer.setStyle({
+            color: '#ff6e00'
+          }).bringToFront();
+        });
+
+        // on mousing off layer
+        layer.on('mouseout', function () {
+
+          // reset the layer style to its original stroke color
+          layer.setStyle({
+            color: '#20282e'
+          });
+        });
+      }
+    }).addTo(map);
+
+
+    // fit the map's bounds and zoom level using the counties extent
+    map.fitBounds(blockGroups.getBounds(), {
+      padding: [18, 18] // add padding around counties
+    });
+
+
+
+
     // function for colors of choropleth using Natural Jenks for airbnb points in polygons
     // function getColor(d) {
 
@@ -98,236 +175,377 @@
     //     '#FFEDA0';
     // }
 
-    function getColor(d) {
-      return d > 100000 ? "#800026" :
-        d > 50000 ? "#BD0026" :
-        d > 15000 ? "#E31A1C" :
-        d > 5000 ? "#FC4E2A" :
-        "#FD8D3C";
-    }
+    // function getColor(d) {
+    //   return d > 100000 ? "#800026" :
+    //     d > 50000 ? "#BD0026" :
+    //     d > 15000 ? "#E31A1C" :
+    //     d > 5000 ? "#FC4E2A" :
+    //     "#FD8D3C";
+    // }
 
-    function getColor2(d) {
-      return d > 100000 ? "#8bd2da" :
-        d > 50000 ? "#9edae0" :
-        d > 15000 ? "#b1e1e7" :
-        d > 5000 ? "#c5e9ed" :
-        "#d8f0f3";
-    }
+    // function getColor2(d) {
+    //   return d > 100000 ? "#8bd2da" :
+    //     d > 50000 ? "#9edae0" :
+    //     d > 15000 ? "#b1e1e7" :
+    //     d > 5000 ? "#c5e9ed" :
+    //     "#d8f0f3";
+    // }
 
-    // create choropleth from blocks features
-    function style(feature) {
+    // // create choropleth from blocks features
+    // function style(feature) {
 
-      return {
-        fillColor: getColor(feature.properties.airbnbs),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '4',
-        fillOpacity: 0.7
-      }
-    };
+    //   return {
+    //     fillColor: getColor(feature.properties.airbnbs),
+    //     weight: 2,
+    //     opacity: 1,
+    //     color: 'white',
+    //     dashArray: '4',
+    //     fillOpacity: 0.7
+    //   }
+    // };
 
-    function style2(feature) {
-      return {
-        fillColor: getColor2(feature.properties.occ_percent),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArrayy: '3',
-        fillOpacity: 0.7
-      }
-    };
+    // function style2(feature) {
+    //   return {
+    //     fillColor: getColor2(feature.properties.occ_percent),
+    //     weight: 2,
+    //     opacity: 1,
+    //     color: 'white',
+    //     dashArrayy: '3',
+    //     fillOpacity: 0.7
+    //   }
+    // };
 
-    var airbnbBlocks = L.geoJson(blocks, {
-      filter: function (feature, layer) {
-        return feature.properties.airbnbs;
-      },
-      style: style,
-      onEachFeature: function onEachFeature(feature, layer) {
-        layer.on({
-          mouseover: highlightFeature,
-          mouseout: resetHighlight,
-          click: zoomToFeature
-        });
+    // var airbnbBlocks = L.geoJson(blocks, {
+    //   filter: function (feature, layer) {
+    //     return feature.properties.airbnbs;
+    //   },
+    //   style: style,
+    //   onEachFeature: function onEachFeature(feature, layer) {
+    //     layer.on({
+    //       mouseover: highlightFeature,
+    //       mouseout: resetHighlight,
+    //       click: zoomToFeature
+    //     });
 
-        function highlightFeature(e) {
-          var layer = e.target;
+    //     function highlightFeature(e) {
+    //       var layer = e.target;
 
-          layer.setStyle({
-            weight: 5,
-            color: '#666',
-            dashArray: "",
-            fillOpacity: 0.7
-          });
+    //       layer.setStyle({
+    //         weight: 5,
+    //         color: '#666',
+    //         dashArray: "",
+    //         fillOpacity: 0.7
+    //       });
 
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-          }
-          info.update(layer.feature.properties);
-        }
+    //       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+    //         layer.bringToFront();
+    //       }
+    //       info.update(layer.feature.properties);
+    //     }
 
-        // reset the mouseout event to original style
-        function resetHighlight(e) {
-          cases.resetStyle(e.target);
-          info.update();
-        }
+    //     // reset the mouseout event to original style
+    //     function resetHighlight(e) {
+    //       cases.resetStyle(e.target);
+    //       info.update();
+    //     }
 
-        function zoomToFeature(e) {
-          map.fitBounds(e.target.getBounds());
-        }
+    //     function zoomToFeature(e) {
+    //       map.fitBounds(e.target.getBounds());
+    //     }
 
-        var info = L.control();
+    //     var info = L.control();
 
-        info.onAdd = function (map) {
-          this._div = L.DomUtil.creat('div', 'info');
-          this.update();
-          return this._div;
-        };
+    //     info.onAdd = function (map) {
+    //       this._div = L.DomUtil.creat('div', 'info');
+    //       this.update();
+    //       return this._div;
+    //     };
 
-        info.onAdd = function (map) {
-          this._div = L.DomUtil.create('div', 'info');
-          this.update();
-          return this._div;
-        };
+    //     info.onAdd = function (map) {
+    //       this._div = L.DomUtil.create('div', 'info');
+    //       this.update();
+    //       return this._div;
+    //     };
 
-        info.update = function (props) {
-          this._div.innerHTML = "<h4>Number of Airbnb Units</h4>" +
-            (props ? "<b>" + props.airbnbs :
-              "Hover over a Block Group");
-        };
+    //     info.update = function (props) {
+    //       this._div.innerHTML = "<h4>Number of Airbnb Units</h4>" +
+    //         (props ? "<b>" + props.airbnbs :
+    //           "Hover over a Block Group");
+    //     };
 
-        var legend = L.control({
-          position: 'bottomright'
-        });
-        legend.onAdd = function (map) {
-          var div = L.DomUtil.create('div', 'info legend');
-          airbnbs = [14, 43, 85, 171],
-            labels = [];
+    //     var legend = L.control({
+    //       position: 'bottomright'
+    //     });
+    //     legend.onAdd = function (map) {
+    //       var div = L.DomUtil.create('div', 'info legend');
+    //       airbnbs = [14, 43, 85, 171],
+    //         labels = [];
 
-          for (var i = 0; i < airbnbs.length; i++) {
-            div.innerHTML +=
-              '<i style="background:' +
-              getColor(airbnbs[i] + 1) +
-              '"></i> ' +
-              airbnbs[i] +
-              (airbnbs[i + 1] ? "&ndash;" + airbnbs[i + 1] + "<br>" : "+");
-          }
-          return div;
-        };
-        info.addTo(map);
-        legend.addTo(map);
-      }
-    });
+    //       for (var i = 0; i < airbnbs.length; i++) {
+    //         div.innerHTML +=
+    //           '<i style="background:' +
+    //           getColor(airbnbs[i] + 1) +
+    //           '"></i> ' +
+    //           airbnbs[i] +
+    //           (airbnbs[i + 1] ? "&ndash;" + airbnbs[i + 1] + "<br>" : "+");
+    //       }
+    //       return div;
+    //     };
+    //     info.addTo(map);
+    //     legend.addTo(map);
+    //   }
+    // });
 
-    var percentOccupied = L.geoJson(blocks, {
-      filter: function (feature, layer) {
-        return feature.properties.occ_percent;
-      },
-      style: style2,
-      onEachFeature: function onEachFeature(feature, layer) {
-        layer.on({
-          mouseover: highlightFeature,
-          mouseout: resetHighlight,
-          click: zoomToFeature,
-        });
+    // var percentOccupied = L.geoJson(blocks, {
+    //   filter: function (feature, layer) {
+    //     return feature.properties.occ_percent;
+    //   },
+    //   style: style2,
+    //   onEachFeature: function onEachFeature(feature, layer) {
+    //     layer.on({
+    //       mouseover: highlightFeature,
+    //       mouseout: resetHighlight,
+    //       click: zoomToFeature,
+    //     });
 
-        function highlightFeature(e) {
-          var layer = e.target;
+    //     function highlightFeature(e) {
+    //       var layer = e.target;
 
-          layer.setStyle({
-            weight: 5,
-            color: "#666",
-            dashArray: "",
-            fillOpacity: 0.7,
-          });
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-          }
-          info.update(layer.feature.properties);
-        }
-        // mouseout of block 
-        function resetHighlight(e) {
-          percentOccupied.resetStyle(e.target);
-          info.update();
-        }
+    //       layer.setStyle({
+    //         weight: 5,
+    //         color: "#666",
+    //         dashArray: "",
+    //         fillOpacity: 0.7,
+    //       });
+    //       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+    //         layer.bringToFront();
+    //       }
+    //       info.update(layer.feature.properties);
+    //     }
+    //     // mouseout of block 
+    //     function resetHighlight(e) {
+    //       percentOccupied.resetStyle(e.target);
+    //       info.update();
+    //     }
 
-        function zoomToFeature(e) {
-          map.fitBounds(e.target.getBounds());
-        }
+    //     function zoomToFeature(e) {
+    //       map.fitBounds(e.target.getBounds());
+    //     }
 
-        var info2 = L.control();
-        info2.onAdd = function (map) {
-          this._div = L.DomUtil.create("div", "info");
-          this.update();
-          return this._div
-        };
+    //     var info2 = L.control();
+    //     info2.onAdd = function (map) {
+    //       this._div = L.DomUtil.create("div", "info");
+    //       this.update();
+    //       return this._div
+    //     };
 
-        info2.update = function (props) {
-          this._div.innerHTML =
-            "<h4>Percent of Housing Units Occupied</h4>" +
-            (props ?
-              "<b>" + props.occ_percent + "%" :
-              "Hover over a Region");
-        };
+    //     info2.update = function (props) {
+    //       this._div.innerHTML =
+    //         "<h4>Percent of Housing Units Occupied</h4>" +
+    //         (props ?
+    //           "<b>" + props.occ_percent + "%" :
+    //           "Hover over a Region");
+    //     };
 
-        var legend2 = L.Control({
-          position: 'bottomright'
-        });
-        legend.onAdd = function (map) {
-          var div = L.DomUtil.create('div', 'info legend'),
-            percentages = [30, 50, 70, 90],
-            labels = [];
+    //     var legend2 = L.Control({
+    //       position: 'bottomright'
+    //     });
+    //     legend.onAdd = function (map) {
+    //       var div = L.DomUtil.create('div', 'info legend'),
+    //         percentages = [30, 50, 70, 90],
+    //         labels = [];
 
-          for (var i = 0; i < percentages.length; i++) {
-            div.innerHTML += '<i style="background: ' +
-              getColor2(percentages[i] + 1) +
-              '"></i>' +
-              percentages[i] +
-              (percentages[i + 1] ? "&ndash;" + percentages[i + 1] + "<br>" : "+");
-          }
-          return div;
-        };
-        info2.addTo(map);
-        legend2.addTo(map);
+    //       for (var i = 0; i < percentages.length; i++) {
+    //         div.innerHTML += '<i style="background: ' +
+    //           getColor2(percentages[i] + 1) +
+    //           '"></i>' +
+    //           percentages[i] +
+    //           (percentages[i + 1] ? "&ndash;" + percentages[i + 1] + "<br>" : "+");
+    //       }
+    //       return div;
+    //     };
+    //     info2.addTo(map);
+    //     legend2.addTo(map);
 
-      }
-    });
+    //   }
+    // });
 
-    airbnbBlocks.addTo(map);
+    // airbnbBlocks.addTo(map);
 
-    // scale 
-    L.control.scale().addTo(map);
-    L.control.mousePosition.addTo(map);
+    // // scale 
+    // L.control.scale().addTo(map);
+    // L.control.mousePosition.addTo(map);
 
-    var selection = L.control({
-      position: "topright"
-    });
+    // var selection = L.control({
+    //   position: "topright"
+    // });
 
-    selection.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'info legend');
+    // selection.onAdd = function (map) {
+    //   var div = L.DomUtil.create('div', 'info legend');
 
-      div.innerHTML =
-        '<select id="select"><option value="opt1">Airbnbs </option>' +
-        '<option value="opt2">Airbnbs</option>' +
-        '<option value="opt3">Airbnbs</option>' +
-        '<option value="opt4">Airbnbs</option></select>';
-      div.firstChild.onmousedown = div.firstChild.ondblclick =
-        L.DomEvent.stopPropogation;
-      return div;
-    };
-    selection.addTo(map);
+    //   div.innerHTML =
+    //     '<select id="select"><option value="opt1">Airbnbs </option>' +
+    //     '<option value="opt2">Airbnbs</option>' +
+    //     '<option value="opt3">Airbnbs</option>' +
+    //     '<option value="opt4">Airbnbs</option></select>';
+    //   div.firstChild.onmousedown = div.firstChild.ondblclick =
+    //     L.DomEvent.stopPropogation;
+    //   return div;
+    // };
+    // selection.addTo(map);
 
-    $("select").change(function (e) {
-      var x = document.getElementById("select").value;
-      if (x == 'opt1') {
-        map.removeLayer(percentOccupied);
-        map.addLayer(airbnbBlocks);
-      } else if (x == 'opt2') {
-        map.removeLayer(airbnbBlocks);
-        map.addLayer(percentOccupied);
-      }
-    });
+    // $("select").change(function (e) {
+    //   var x = document.getElementById("select").value;
+    //   if (x == 'opt1') {
+    //     map.removeLayer(percentOccupied);
+    //     map.addLayer(airbnbBlocks);
+    //   } else if (x == 'opt2') {
+    //     map.removeLayer(airbnbBlocks);
+    //     map.addLayer(percentOccupied);
+    //   }
+    // });
+
+    updateMap(blockGroups)
+
+    addUi()
   }
+  ///////////////////////////////////////////////////////////////
+  // get class breaks for data based on airbnbs per block 
+  function getClassBreaks(blockGroups) {
+
+    // create empty array for storing values 
+    const values = [];
+
+    // loop through all of the blocks 
+    blockGroups.eachLayer(function (layer) {
+      let value = layer.feature.properties[attributeValue] / layer.feature.properties[normValue];
+      values.push(value);
+    });
+
+    // determine similar clusters
+    const clusters = ss.ckmeans(values, 5);
+
+    // create an array of the lowest value within each cluster 
+    const breaks = clusters.map(function (cluster) {
+      return [cluster[0], cluster.pop()];
+    });
+
+    // return an array of arrays 
+    return breaks;
+  }
+  ////////////////////////////////////////////
+  // Get color of blockgroup
+  function getColor(d, breaks) {
+    // function accepts a single normalized data attribute value
+    // and uses a series of conditional statements to determine which
+    // which color value to return to return to the function caller
+
+    if (d <= breaks[0][1]) {
+      return '#f1eef6';
+    } else if (d <= breaks[1][1]) {
+      return '#bdc9e1';
+    } else if (d <= breaks[2][1]) {
+      return '#74a9cf';
+    } else if (d <= breaks[3][1]) {
+      return '#2b8cbe'
+    } else if (d <= breaks[4][1]) {
+      return '#045a8d'
+    }
+  }
+  /////////////////////////////////////////
+  function updateMap(blockGroups) {
+
+    // check if the data is being pipelined from drawMap function to updateMap function
+    console.log(blockGroups)
+
+    // get the class breaks for the current data attribute 
+    const breaks = getClassBreaks(blockGroups);
+
+    // loop through each block layer and update the color and tooltip info 
+    blockGroups.eachLayer(function (layer) {
+
+      const props = layer.feature.properties;
+
+      // set the fill color of the layer based on its normalized data value 
+      layer.setStyle({
+        fillColor: getColor(props[attributeValue] / props[normValue], breaks)
+      });
+
+      // assemble string sequence of info for tooltip 
+
+      let tooltipInfo = `<b>Tract: ${props.TRACTCE}</b></br>
+      ${((props[attributeValue] / props[normValue]) * 100).toLocaleString()}%`
+
+      // bind tooltip toi layer with block-specific information
+      layer.bindTooltip(tooltipInfo, {
+        //sticky property so tooltip follows mouse
+        sticky: true
+      });
+    });
+
+    // update legend with current data attribut info 
+    addLegend(breaks);
+  }
+
+  // add legend to map 
+  function addLegend(breaks) {
+
+    // create new Leaflet control object and position it top left 
+    const legendControl = L.control({
+      position: 'bottomright'
+    });
+
+    // when legend is added to the map 
+    legendControl.onAdd = function () {
+
+      // select a div element with an id attribute of legend
+      const legend = L.DomUtil.get('legend');
+
+      // disable scroll and click/touch on map when on legend
+      L.DomEvent.disableScrollPropagation(legend);
+      L.DomEvent.disableClickPropagation(legend);
+
+      // return the selection to the method 
+      return legend;
+
+    };
+
+    // add the empty legend dive to the map 
+    legendControl.addTo(map);
+
+    // select the legend, add a title, begin an unordered list and assign to variable 
+    const legend = $('#legend').html(`<h5>${labels[attributeValue]}</h5>`);
+
+    // loop through the array of classification break values
+    for (let i = 0; i <= breaks.length - 1; i++) {
+
+      let color = getColor(breaks[i][0], breaks);
+
+      legend.append(
+        `<span style="background:${color}"></span>
+      <label>${(breaks[i][0]*100).toLocaleString()} &mdash;
+        ${(breaks[i][1]*100).toLocaleString()}%</label>`);
+    }
+  }
+
+  function addUi() {
+    // create the slider control 
+    var selectControl = L.control({position:'topright'}); 
+
+    // when control is added 
+    selectControl.onAdd = function() {
+      // get the element with id attribute of ui-controls 
+      return L.DomUtil.get("dropdown-ui");
+    };
+    // add control to the map 
+    selectControl.addTo(map)
+
+    $('#dropdown-ui select').change(function() {
+    attributeValue = this.value;
+  })
+  }
+
+
 </script>
 
 </html>
