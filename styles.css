@@ -6,6 +6,11 @@ body {
 
 h1 {
   font-weight: 800;
+  text-align: center;
+}
+
+h3 {
+  text-align: center;
 }
 
 p {
@@ -19,8 +24,8 @@ p {
 
 #legend {
   font-size: 1rem;
-  border-radius: 5px;
-  max-width: 200px;
+  border-radius: 2px;
+  max-width: 300px;
   font-family: 'Open Sans', sans-serif;
 }
 
