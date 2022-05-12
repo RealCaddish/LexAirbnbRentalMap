@@ -130,7 +130,7 @@
     console.log(listings)
 
     // create Leaflet data layer and add to map
-    const blockGroups = L.geoJson(data, {
+    const blockGroups = L.geoJson(data[0], {
       // style counties with initial default path options
       style: function (feature) {
         return {
@@ -171,7 +171,7 @@
 
     updateMap(blockGroups)
 
-    addUi()
+    addUi(blockGroups)
   }
   ///////////////////////////////////////////////////////////////
   // get class breaks for data based on airbnbs per block 
@@ -292,7 +292,7 @@
     }
   }
   ///////////////////////////////////////////////////////////////////////
-  function addUi() {
+  function addUi(blockGroups) {
     // create the slider control 
     var selectControl = L.control({
       position: 'topright'
@@ -310,7 +310,9 @@
       attributeValue = this.value;
 
       console.log(this.value)
+      updateMap(blockGroups)
     })
+  
   }
 
 

@@ -38,6 +38,7 @@ p {
 
 #legend label {
   font-size: 0.9rem;
+  display: inline;
 }
 
 #legend label:after {
