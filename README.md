@@ -1,4 +1,4 @@
-# <center> The High Price of Coordinates: The Spatiality of Airbnb and Rental Supply in Lexington, KY </center>
+# <center> The High Price of Coordinates: The Spatiality of Airbnb and Rental Supply in Nashville, TN </center>
 ## Table of Contents
 
 - I. Introduction
