@@ -6,10 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nashville Airbnb Occupancy Map</title>
 
-  <!--bootstrap stylesheet-->
+  <!--Bootstrap CSS-->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
+  <!--Personal CSS-->
   <link rel="stylesheet" href="styles.css">
 
   <!--Leaflet CSS-->
@@ -22,7 +23,8 @@
   <div class="container-fluid">
     <header class="row bg-dark text-white py-3">
       <div class="col">
-        <h1>For Rent or Vacation? Effects of the Short-Term Rental Market on Housing Occupancy in Nashville </h1>
+        <h1>For Rent or Vacation? Measuring the Short-Term Rental Market Against Housing Occupancy in Nashville,
+          Tennessee </h1>
       </div>
     </header>
 
@@ -84,6 +86,8 @@
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <!--simple statistics CDN-->
   <script src='https://unpkg.com/simple-statistics@7.7.5/dist/simple-statistics.min.js'></script>
+  <!--Turf.js CDN-->
+  <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 </body>
 <script>
   // set options for the map object
@@ -101,9 +105,10 @@
   // load in data with d3 fetch
   const blocksDataRaw = d3.json('/data/geojson/blocks_census_airbnb_joined.geojson');
   const listingsDataRaw = d3.csv('/data/csv/listings_cleaned.csv')
+  const listingsGeojson = d3.json('./data/geojson/listings_cleaned.geojson')
 
   // promise statement to call an array of data variables then proceed to mapping function
-  Promise.all([blocksDataRaw, listingsDataRaw]).then(drawMap);
+  Promise.all([blocksDataRaw, listingsGeojson]).then(drawMap);
 
   // set global variables for map layer
   // mapped attribute, and normalizing attribute 
@@ -160,18 +165,72 @@
             color: '#20282e'
           });
         });
+
+        // zoom to block group on click
+        layer.on('click', function (e) {
+          map.setView(e.latlng, 13)
+        })
       }
     }).addTo(map);
 
+    // airbnb point circle options
+    var geojsonMarkerOptions = {
+      radius: 8,
+      fillColor: "#ff7800",
+      color: "#000",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
 
     // fit the map's bounds and zoom level using the counties extent
     map.fitBounds(blockGroups.getBounds(), {
       padding: [18, 18] // add padding around counties
     });
 
-    updateMap(blockGroups)
 
-    addUi(blockGroups)
+    // add airbnb points to map
+    var airbnbListings = L.geoJson(data[1], {
+      style: function (feature) {
+        return {
+          color: feature.properties.host_name
+        }
+      },
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, geojsonMarkerOptions)
+      }
+    });
+    
+    // convert airbnbs to turf-friendly geojson 
+    var turfAirbnbs = airbnbListings.toGeoJSON();
+
+    // loop through blockGroups and update with points within the polygon from Turf 
+    blockGroups.eachLayer(function (layer) {
+      // convert Leaflet layer to geojson with Leaflet toGeoJSON() method
+      var turfBlocks = layer.toGeoJSON();
+
+      // if the result's feature is inside the polygon
+      if (turf.booleanPointInPolygon(turfAirbnbs, turfBlocks)) {
+        // adjust the map pan/zoom to the block group bounds
+        map.flyToBounds(layer.getBounds(), {
+          padding: [20, 20]
+        });
+
+        // when the map is zooming on the flyto 
+        map.on("zoomend", function () {
+          layer.setStyle({
+              color: '#f0dc00',
+              fill: false,
+              weight: '3'
+            })
+            .bringToFront();
+        })
+      }
+    })
+
+    // function calls to loop through
+    updateMap(blockGroups);
+    addUi(blockGroups);
   }
   ///////////////////////////////////////////////////////////////
   // get class breaks for data based on airbnbs per block 
@@ -205,15 +264,15 @@
     // which color value to return to return to the function caller
 
     if (d <= breaks[0][1]) {
-      return '#810f7c';
+      return '#edf8fb';
     } else if (d <= breaks[1][1]) {
-      return '#8856a7';
+      return '#b3cde3';
     } else if (d <= breaks[2][1]) {
       return '#8c96c6';
     } else if (d <= breaks[3][1]) {
-      return '#b3cde3'
+      return '#8856a7'
     } else if (d <= breaks[4][1]) {
-      return '#edf8fb'
+      return '#810f7c'
     }
   }
   /////////////////////////////////////////
@@ -312,10 +371,8 @@
       console.log(this.value)
       updateMap(blockGroups)
     })
-  
   }
-
-
+  //////////////////////////////////////////////////////////////////////
 </script>
 
 </html>
