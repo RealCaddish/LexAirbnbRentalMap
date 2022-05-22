@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
     integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
     crossorigin="" />
+  <!--Pure CSS-->
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    integrity="sha384-yHIFVG6ClnONEA5yB5DJXfW2/KC173DIQrYoZMEtBvGzmf0PKiGyNEqe9N6BNDBH" crossorigin="anonymous">
 </head>
 
 <body>
@@ -31,6 +34,11 @@
     <section class="row">
       <div class="col-md-8 col-lg-9 col-xl-10 order-md-2 px-0">
         <div id="map"></div>
+        <div class="pure-button-group">
+          <button class="pure-button" id="button-fly-nash">
+            Fly back to Davidson County!
+          </button>
+        </div>
       </div>
       <aside id="about" class="col-md-4 col-lg-3 col-xl-2 order-md-1 text-white py-2 pl-3 bg-secondary overflow-auto">
         <section>
@@ -111,9 +119,9 @@
   Promise.all([blocksDataRaw, listingsGeojson]).then(drawMap);
 
   // set global variables for map layer
-  // mapped attribute, and normalizing attribute 
+  // mapped attribute, and normalizing attribute
   let attributeValue = 'total_occu_sum'
-  let normValue = "total_unit_sum"
+  let normValue = 'total_unit_sum'
 
   console.log(normValue)
 
@@ -168,7 +176,7 @@
 
         // zoom to block group on click
         layer.on('click', function (e) {
-          map.setView(e.latlng, 13)
+          map.flyTo(e.latlng, 13)
         })
       }
     }).addTo(map);
@@ -188,6 +196,13 @@
       padding: [18, 18] // add padding around counties
     });
 
+    // set the coordinates for Davidson County
+    var davidsonCoords = [36.1627, -86.7816]
+    // return to initial layer zoom state on clicking the nashville button
+    $('#button-fly-nash').on('click', function() {
+      map.flyTo(davidsonCoords, 10.75)
+    })
+
 
     // add airbnb points to map
     var airbnbListings = L.geoJson(data[1], {
@@ -200,46 +215,47 @@
         return L.circleMarker(latlng, geojsonMarkerOptions)
       }
     });
-    
-    // convert airbnbs to turf-friendly geojson 
+
+    // convert airbnbs to turf-friendly geojson
     var turfAirbnbs = airbnbListings.toGeoJSON();
 
-    // loop through blockGroups and update with points within the polygon from Turf 
-    blockGroups.eachLayer(function (layer) {
-      // convert Leaflet layer to geojson with Leaflet toGeoJSON() method
-      var turfBlocks = layer.toGeoJSON();
+    // loop through blockGroups and update with points within the polygon from Turf
+    // blockGroups.eachLayer(function (layer) {
+    //   // convert Leaflet layer to geojson with Leaflet toGeoJSON() method
+    //   var turfBlocks = layer.toGeoJSON();
 
-      // if the result's feature is inside the polygon
-      if (turf.booleanPointInPolygon(turfAirbnbs, turfBlocks)) {
-        // adjust the map pan/zoom to the block group bounds
-        map.flyToBounds(layer.getBounds(), {
-          padding: [20, 20]
-        });
+    //   // if the result's feature is inside the polygon
+    //   if (turf.booleanPointInPolygon(turfAirbnbs, turfBlocks)) {
+    //     // adjust the map pan/zoom to the block group bounds
+    //     map.flyToBounds(layer.getBounds(), {
+    //       padding: [20, 20]
+    //     });
 
-        // when the map is zooming on the flyto 
-        map.on("zoomend", function () {
-          layer.setStyle({
-              color: '#f0dc00',
-              fill: false,
-              weight: '3'
-            })
-            .bringToFront();
-        })
-      }
-    })
+    //     // when the map is zooming on the flyto
+    //     map.on("zoomend", function () {
+    //       layer.setStyle({
+    //           color: '#f0dc00',
+    //           fill: false,
+    //           weight: '3'
+    //         })
+    //         .bringToFront();
+    //     })
+    //   }
+    // })
 
     // function calls to loop through
     updateMap(blockGroups);
     addUi(blockGroups);
+    //flyBack(county)
   }
   ///////////////////////////////////////////////////////////////
-  // get class breaks for data based on airbnbs per block 
+  // get class breaks for data based on airbnbs per block
   function getClassBreaks(blockGroups) {
 
-    // create empty array for storing values 
+    // create empty array for storing values
     const values = [];
 
-    // loop through all of the blocks 
+    // loop through all of the blocks
     blockGroups.eachLayer(function (layer) {
       let value = layer.feature.properties[attributeValue] / layer.feature.properties[normValue];
       values.push(value);
@@ -248,15 +264,15 @@
     // determine similar clusters
     const clusters = ss.ckmeans(values, 5);
 
-    // create an array of the lowest value within each cluster 
+    // create an array of the lowest value within each cluster
     const breaks = clusters.map(function (cluster) {
       return [cluster[0], cluster.pop()];
     });
 
-    // return an array of arrays 
+    // return an array of arrays
     return breaks;
   }
-  ////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////
   // Get color of blockgroup
   function getColor(d, breaks) {
     // function accepts a single normalized data attribute value
@@ -275,26 +291,26 @@
       return '#810f7c'
     }
   }
-  /////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
   function updateMap(blockGroups) {
 
     // check if the data is being pipelined from drawMap function to updateMap function
     console.log(blockGroups)
 
-    // get the class breaks for the current data attribute 
+    // get the class breaks for the current data attribute
     const breaks = getClassBreaks(blockGroups);
 
-    // loop through each block layer and update the color and tooltip info 
+    // loop through each block layer and update the color and tooltip info
     blockGroups.eachLayer(function (layer) {
 
       const props = layer.feature.properties;
 
-      // set the fill color of the layer based on its normalized data value 
+      // set the fill color of the layer based on its normalized data value
       layer.setStyle({
         fillColor: getColor(props[attributeValue] / props[normValue], breaks)
       });
 
-      // assemble string sequence of info for tooltip 
+      // assemble string sequence of info for tooltip
 
       let tooltipInfo = `<b>Tract: ${props.TRACTCE}</b></br>
       ${((props[attributeValue] / props[normValue]) * 100).toLocaleString()}%`
@@ -306,19 +322,19 @@
       });
     });
 
-    // update legend with current data attribut info 
+    // update legend with current data attribute info
     addLegend(breaks);
   }
   ////////////////////////////////////////////////////////////////////////
-  // add legend to map 
+  // add legend to map
   function addLegend(breaks) {
 
-    // create new Leaflet control object and position it top left 
+    // create new Leaflet control object and position it top left
     const legendControl = L.control({
       position: 'bottomright'
     });
 
-    // when legend is added to the map 
+    // when legend is added to the map
     legendControl.onAdd = function () {
 
       // select a div element with an id attribute of legend
@@ -328,15 +344,15 @@
       L.DomEvent.disableScrollPropagation(legend);
       L.DomEvent.disableClickPropagation(legend);
 
-      // return the selection to the method 
+      // return the selection to the method
       return legend;
 
     };
 
-    // add the empty legend dive to the map 
+    // add the empty legend div to the map
     legendControl.addTo(map);
 
-    // select the legend, add a title, begin an unordered list and assign to variable 
+    // select the legend, add a title, begin an unordered list and assign to variable
     const legend = $('#legend').html(`<h5>${attributeValue}</h5>`);
 
     // loop through the array of classification break values
@@ -352,17 +368,17 @@
   }
   ///////////////////////////////////////////////////////////////////////
   function addUi(blockGroups) {
-    // create the slider control 
+    // create the slider control
     var selectControl = L.control({
       position: 'topright'
     });
 
-    // when control is added 
+    // when control is added
     selectControl.onAdd = function () {
-      // get the element with id attribute of ui-controls 
+      // get the element with id attribute of ui-controls
       return L.DomUtil.get("dropdown-ui");
     };
-    // add control to the map 
+    // add control to the map
     selectControl.addTo(map)
 
     $('#dropdown-ui select').change(function () {
@@ -373,6 +389,21 @@
     })
   }
   //////////////////////////////////////////////////////////////////////
+  // add fly
+  // function flyBack(county) {
+  //   // create flyback control
+  //   var flyControl = L.control({
+  //     position: 'bottomleft'
+  //   });
+
+  //   //when control is added
+  //   selectControl.onAdd = function () {
+  //     // get the nashville button with id of button-fly-nash
+  //     return L.DomUtil.get("fly-to-nash");
+  //   };
+  //   // add control to the map
+  //   selectControl.addTo(map)
+  // }
 </script>
 
 </html>
