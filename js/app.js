@@ -55,6 +55,7 @@ function drawMap(data) {
     weight: 1,
     opacity: 1,
     fillOpacity: 1,
+    
   };
 
   // add airbnb points to map
@@ -65,7 +66,7 @@ function drawMap(data) {
       };
     },
     pointToLayer: function (feature, latlng) {
-      return L.circleMarker(latlng, geojsonMarkerOptions);
+      return L.circleMarker(latlng, geojsonMarkerOptions).bringToFront();
     },
   });
 
@@ -89,7 +90,6 @@ function drawMap(data) {
           .setStyle({
             color: '#ff6e00',
           })
-          .bringToFront();
       });
 
       // on mousing off layer
@@ -119,36 +119,6 @@ function drawMap(data) {
   $('#button-fly-nash').on('click', function () {
     map.flyTo(davidsonCoords, 10.75);
   });
-
-  // convert airbnbs to turf-friendly geojson
-  //   var turfAirbnbs = airbnbListings.toGeoJSON();
-  //   let pointsToShare = L.geoJson;
-
-  // loop through blockGroups and update with points within the polygon from Turf
-  //   blockGroups.eachLayer(function (layer) {
-  //     // convert Leaflet layer to geojson with Leaflet toGeoJSON() method
-  //     var turfBlock = layer.toGeoJSON();
-  //     console.log(turfBlock);
-
-  //     // if the result's feature is inside the polygon
-  //     if (turf.booleanPointInPolygon(turfAirbnbs, turfBlock)) {
-  //       // adjust the map pan/zoom to the block group bounds
-  //       map.flyToBounds(layer.getBounds(), {
-  //         padding: [20, 20],
-  //       });
-
-  //       // when the map is zooming on the flyto
-  //       map.on('zoomend', function () {
-  //         layer
-  //           .setStyle({
-  //             color: '#f0dc00',
-  //             fill: false,
-  //             weight: '3',
-  //           })
-  //           .bringToFront();
-  //       });
-  //     }
-  //   });
 
   // function calls to loop through
   updateMap(blockGroups);
@@ -181,6 +151,8 @@ function analyzeResults() {
   // loop through visiblePoints and analyze data attribute
   // analyze with simple stats
   // call function to draw/update chart using D3
+  console.log(visiblePoints)
+  
 }
 
 ///////////////////////////////////////////////////////////////
@@ -318,20 +290,4 @@ function addUi(blockGroups) {
     console.log(this.value);
     updateMap(blockGroups);
   });
-}
-//////////////////////////////////////////////////////////////////////
-// add fly
-// function flyBack(county) {
-//   // create flyback control
-//   var flyControl = L.control({
-//     position: 'bottomleft'
-//   });
-
-//   //when control is added
-//   selectControl.onAdd = function () {
-//     // get the nashville button with id of button-fly-nash
-//     return L.DomUtil.get("fly-to-nash");
-//   };
-//   // add control to the map
-//   selectControl.addTo(map)
-// }
+};
