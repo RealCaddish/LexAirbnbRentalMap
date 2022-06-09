@@ -241,7 +241,7 @@ function updateMap(blockGroups) {
     // assemble string sequence of info for tooltip
 
     let tooltipInfo = `<b>Tract: ${props.TRACTCE}</b></br>
-      ${((props[attributeValue] / props[normValue]) * 100).toLocaleString()}%`;
+      Number of Airbnbs Per 1,000 Housing Units: ${((props[attributeValue] / props[normValue] * 1000))}`;
 
     // bind tooltip to layer with block-specific information
     layer.bindTooltip(tooltipInfo, {
