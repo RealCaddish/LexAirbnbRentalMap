@@ -6,39 +6,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nashville Airbnb Occupancy Map</title>
 
-  <!--bootstrap stylesheet-->
+  <!--Bootstrap CSS-->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
+  <!--Personal CSS-->
   <link rel="stylesheet" href="styles.css">
 
   <!--Leaflet CSS-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
     integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
     crossorigin="" />
+  <!--Pure CSS-->
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    integrity="sha384-yHIFVG6ClnONEA5yB5DJXfW2/KC173DIQrYoZMEtBvGzmf0PKiGyNEqe9N6BNDBH" crossorigin="anonymous">
 </head>
 
 <body>
   <div class="container-fluid">
-    <div class="row">
-
-      <div class="col-sm-2">
-        Col 1
+    <header class="row bg-dark text-white py-3">
+      <div class="col">
+        <h1>For Rent or Vacation? Measuring the Short-Term Rental Market Against Housing Occupancy in Nashville,
+          Tennessee </h1>
       </div>
-      <div class="col-sm-10">
-        Col 2
-        <div id="map">
-          <h1>Nashville Hello World</h1>
+    </header>
+
+    <section class="row">
+      <div class="col-md-8 col-lg-9 col-xl-10 order-md-2 px-0">
+        <div id="map"></div>
+        <div class="pure-button-group">
+          <button class="pure-button" id="button-fly-nash">
+            Fly back to Davidson County!
+          </button>
         </div>
       </div>
-    </div>
+      <aside id="about" class="col-md-4 col-lg-3 col-xl-2 order-md-1 text-white py-2 pl-3 bg-secondary overflow-auto">
+        <section>
+          <h3 class="py-2">Housing Occupancy and the Short Term Rental Market</h3>
+          <p>A fan brush is a fantastic piece of equipment. Use it. Make friends with it. We're not trying to teach you
+            a thing to copy. We're just here to teach you a technique, then let you loose into the world. We'll put a
+            happy little sky in here.</p>
+          <p>You are only limited by your imagination. We'll do another happy little painting. Work on one thing at a
+            time. Don't get carried away - we have plenty of time. Look at them little rascals. We'll put all the little
+            clouds in and let them dance around and have fun. You can spend all day playing with mountains.</p>
+        </section>
+      </aside>
+    </section>
 
+    <footer class="row bg-dark text-white py-3">
+      <div class="col">
+        <ul class="list-unstyled">
+          <li>authored by <a href="https://realcaddish.github.io/">Nathaniel Deaton</a></li>
+          <li>Map Authored in May, 2022</li>
+          <li>data source: <a href="#">data source</a></li>
+        </ul>
+      </div>
+    </footer>
   </div>
+
+  <!-- legend is outside of container-fluid and will be dynamically added to map -->
+  <div class="bg-secondary py-2 px-3 ml-3 mt-3 text-white" id="legend"></div>
+
+  <!-- ui is outside of container-fluid and will be dynamically added to map -->
+  <div class="form-group mr-3 mt-3" id="dropdown-ui">
+    <label>Choose a data attribute to learn more</label>
+    <select class="form-control bg-secondary text-white">
+      <option value="airbnbs" selected>airbnbs by block group</option>
+      <option value="occ_percent">percent of units occupied</option>
+      <option value="vaca_percent">percent of units vacant</option>
+    </select>
+  </div>
+
+  
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
 
   <!--Bootstrap CDN-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-  </script>
+    </script>
   <!--Leaflet CDN -->
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
@@ -50,284 +96,11 @@
   <!--jquery CDN -->
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <!--simple statistics CDN-->
+  <script src='https://unpkg.com/simple-statistics@7.7.5/dist/simple-statistics.min.js'></script>
+  <!--Turf.js CDN-->
+  <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 </body>
-<script>
-  // set options for the map object
-  const options = {
-    zoomSnap: .1,
-    center: [36.1627, -86.7816],
-    zoom: 11,
-    minZoom: 2,
-    maxZoom: 13,
-  };
-
-  // creating the map object
-  const map = L.map('map', options);
-
-  // load in data with d3 fetch
-  const blocksDataRaw = d3.json('/data/geojson/blocks_census_airbnb_joined.geojson');
-  const listingsDataRaw = d3.csv('/data/csv/listings_cleaned.csv')
-
-  // promise statement to call an array of data variables then proceed to mapping function
-  Promise.all([blocksDataRaw, listingsDataRaw]).then(drawMap);
-
-  function drawMap(data) {
-
-    // display Carto basemap tiles with light features and labels
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    });
-
-    // add basemap tiles to map
-    tiles.addTo(map);
-
-    const blocks = data[0];
-    const listings = data[1]
-
-    console.log(blocks)
-    console.log(listings)
-
-    // function for colors of choropleth using Natural Jenks for airbnb points in polygons
-    // function getColor(d) {
-
-    //   return d > 171 ? '#800026' :
-    //     d > 85 ? '#BD0026' :
-    //     d > 43 ? '#E31A1C' :
-    //     d > 14 ? '#FC4E2A' :
-    //     '#FFEDA0';
-    // }
-
-    function getColor(d) {
-      return d > 100000 ? "#800026" :
-        d > 50000 ? "#BD0026" :
-        d > 15000 ? "#E31A1C" :
-        d > 5000 ? "#FC4E2A" :
-        "#FD8D3C";
-    }
-
-    function getColor2(d) {
-      return d > 100000 ? "#8bd2da" :
-        d > 50000 ? "#9edae0" :
-        d > 15000 ? "#b1e1e7" :
-        d > 5000 ? "#c5e9ed" :
-        "#d8f0f3";
-    }
-
-    // create choropleth from blocks features
-    function style(feature) {
-
-      return {
-        fillColor: getColor(feature.properties.airbnbs),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '4',
-        fillOpacity: 0.7
-      }
-    };
-
-    function style2(feature) {
-      return {
-        fillColor: getColor2(feature.properties.occ_percent),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArrayy: '3',
-        fillOpacity: 0.7
-      }
-    };
-
-    var airbnbBlocks = L.geoJson(blocks, {
-      filter: function (feature, layer) {
-        return feature.properties.airbnbs;
-      },
-      style: style,
-      onEachFeature: function onEachFeature(feature, layer) {
-        layer.on({
-          mouseover: highlightFeature,
-          mouseout: resetHighlight,
-          click: zoomToFeature
-        });
-
-        function highlightFeature(e) {
-          var layer = e.target;
-
-          layer.setStyle({
-            weight: 5,
-            color: '#666',
-            dashArray: "",
-            fillOpacity: 0.7
-          });
-
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-          }
-          info.update(layer.feature.properties);
-        }
-
-        // reset the mouseout event to original style
-        function resetHighlight(e) {
-          cases.resetStyle(e.target);
-          info.update();
-        }
-
-        function zoomToFeature(e) {
-          map.fitBounds(e.target.getBounds());
-        }
-
-        var info = L.control();
-
-        info.onAdd = function (map) {
-          this._div = L.DomUtil.creat('div', 'info');
-          this.update();
-          return this._div;
-        };
-
-        info.onAdd = function (map) {
-          this._div = L.DomUtil.create('div', 'info');
-          this.update();
-          return this._div;
-        };
-
-        info.update = function (props) {
-          this._div.innerHTML = "<h4>Number of Airbnb Units</h4>" +
-            (props ? "<b>" + props.airbnbs :
-              "Hover over a Block Group");
-        };
-
-        var legend = L.control({
-          position: 'bottomright'
-        });
-        legend.onAdd = function (map) {
-          var div = L.DomUtil.create('div', 'info legend');
-          airbnbs = [14, 43, 85, 171],
-            labels = [];
-
-          for (var i = 0; i < airbnbs.length; i++) {
-            div.innerHTML +=
-              '<i style="background:' +
-              getColor(airbnbs[i] + 1) +
-              '"></i> ' +
-              airbnbs[i] +
-              (airbnbs[i + 1] ? "&ndash;" + airbnbs[i + 1] + "<br>" : "+");
-          }
-          return div;
-        };
-        info.addTo(map);
-        legend.addTo(map);
-      }
-    });
-
-    var percentOccupied = L.geoJson(blocks, {
-      filter: function (feature, layer) {
-        return feature.properties.occ_percent;
-      },
-      style: style2,
-      onEachFeature: function onEachFeature(feature, layer) {
-        layer.on({
-          mouseover: highlightFeature,
-          mouseout: resetHighlight,
-          click: zoomToFeature,
-        });
-
-        function highlightFeature(e) {
-          var layer = e.target;
-
-          layer.setStyle({
-            weight: 5,
-            color: "#666",
-            dashArray: "",
-            fillOpacity: 0.7,
-          });
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-          }
-          info.update(layer.feature.properties);
-        }
-        // mouseout of block 
-        function resetHighlight(e) {
-          percentOccupied.resetStyle(e.target);
-          info.update();
-        }
-
-        function zoomToFeature(e) {
-          map.fitBounds(e.target.getBounds());
-        }
-
-        var info2 = L.control();
-        info2.onAdd = function (map) {
-          this._div = L.DomUtil.create("div", "info");
-          this.update();
-          return this._div
-        };
-
-        info2.update = function (props) {
-          this._div.innerHTML =
-            "<h4>Percent of Housing Units Occupied</h4>" +
-            (props ?
-              "<b>" + props.occ_percent + "%" :
-              "Hover over a Region");
-        };
-
-        var legend2 = L.Control({
-          position: 'bottomright'
-        });
-        legend.onAdd = function (map) {
-          var div = L.DomUtil.create('div', 'info legend'),
-            percentages = [30, 50, 70, 90],
-            labels = [];
-
-          for (var i = 0; i < percentages.length; i++) {
-            div.innerHTML += '<i style="background: ' +
-              getColor2(percentages[i] + 1) +
-              '"></i>' +
-              percentages[i] +
-              (percentages[i + 1] ? "&ndash;" + percentages[i + 1] + "<br>" : "+");
-          }
-          return div;
-        };
-        info2.addTo(map);
-        legend2.addTo(map);
-
-      }
-    });
-
-    airbnbBlocks.addTo(map);
-
-    // scale 
-    L.control.scale().addTo(map);
-    L.control.mousePosition.addTo(map);
-
-    var selection = L.control({
-      position: "topright"
-    });
-
-    selection.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'info legend');
-
-      div.innerHTML =
-        '<select id="select"><option value="opt1">Airbnbs </option>' +
-        '<option value="opt2">Airbnbs</option>' +
-        '<option value="opt3">Airbnbs</option>' +
-        '<option value="opt4">Airbnbs</option></select>';
-      div.firstChild.onmousedown = div.firstChild.ondblclick =
-        L.DomEvent.stopPropogation;
-      return div;
-    };
-    selection.addTo(map);
-
-    $("select").change(function (e) {
-      var x = document.getElementById("select").value;
-      if (x == 'opt1') {
-        map.removeLayer(percentOccupied);
-        map.addLayer(airbnbBlocks);
-      } else if (x == 'opt2') {
-        map.removeLayer(airbnbBlocks);
-        map.addLayer(percentOccupied);
-      }
-    });
-  }
-</script>
+<script src="js/app.js"></script>
 
 </html>
