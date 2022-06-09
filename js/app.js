@@ -12,10 +12,10 @@ const map = L.map('map', options);
 
 // load in data with d3 fetch
 const blocksDataRaw = d3.json(
-  '/data/geojson/blocks_census_airbnb_joined.geojson'
+  'data/geojson/blocks_census_airbnb_joined.geojson'
 );
-const listingsDataRaw = d3.csv('/data/csv/listings_cleaned.csv');
-const listingsGeojson = d3.json('./data/geojson/listings_cleaned.geojson');
+const listingsDataRaw = d3.csv('data/csv/listings_cleaned.csv');
+const listingsGeojson = d3.json('data/geojson/listings_cleaned.geojson');
 
 const visiblePoints = L.featureGroup().addTo(map);
 const hiddenPoints = L.featureGroup();
@@ -25,10 +25,8 @@ Promise.all([blocksDataRaw, listingsGeojson]).then(drawMap);
 
 // set global variables for map layer
 // mapped attribute, and normalizing attribute
-let attributeValue = 'total_occu_sum';
+let attributeValue = 'airbnbs';
 let normValue = 'total_unit_sum';
-
-console.log(normValue);
 
 function drawMap(data) {
   // display Carto basemap tiles with light features and labels
@@ -55,7 +53,6 @@ function drawMap(data) {
     weight: 1,
     opacity: 1,
     fillOpacity: 1,
-    
   };
 
   // add airbnb points to map
@@ -86,10 +83,9 @@ function drawMap(data) {
       // when mousing over a layer
       layer.on('mouseover', function () {
         // change the stroke color and bring that element to the front
-        layer
-          .setStyle({
-            color: '#ff6e00',
-          })
+        layer.setStyle({
+          color: '#ff6e00',
+        });
       });
 
       // on mousing off layer
@@ -151,8 +147,7 @@ function analyzeResults() {
   // loop through visiblePoints and analyze data attribute
   // analyze with simple stats
   // call function to draw/update chart using D3
-  console.log(visiblePoints)
-  
+  console.log(visiblePoints);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -161,21 +156,30 @@ function getClassBreaks(blockGroups) {
   // create empty array for storing values
   const values = [];
 
-  // loop through all of the blocks
-  blockGroups.eachLayer(function (layer) {
-    let value =
-      layer.feature.properties[attributeValue] /
-      layer.feature.properties[normValue];
-    values.push(value);
-  });
+  if (attributeValue == 'airbnbs') {
+    // loop through all of the blocks
+    blockGroups.eachLayer(function (layer) {
+      let value =
+        layer.feature.properties[attributeValue] /
+        layer.feature.properties[normValue];
+      values.push(value);
+    });
+  } else {
+    blockGroups.eachLayer(function (layer) {
+      values.push(layer.feature.properties[attributeValue]);
+    });
+  }
 
   // determine similar clusters
-  const clusters = ss.ckmeans(values, 5);
-
+  // const clusters = ss.ckmeans(values, 5);
+  // console.log(clusters);
   // create an array of the lowest value within each cluster
-  const breaks = clusters.map(function (cluster) {
-    return [cluster[0], cluster.pop()];
-  });
+  // const breaks = clusters.map(function (cluster) {
+  //   return [cluster[0], cluster.pop()];
+  // });
+
+  const breaks = ss.equalIntervalBreaks(values, 5);
+  console.log(breaks);
 
   // return an array of arrays
   return breaks;
@@ -187,15 +191,27 @@ function getColor(d, breaks) {
   // and uses a series of conditional statements to determine which
   // which color value to return to return to the function caller
 
-  if (d <= breaks[0][1]) {
+  // if (d <= breaks[0][1]) {
+  //   return '#edf8fb';
+  // } else if (d <= breaks[1][1]) {
+  //   return '#b3cde3';
+  // } else if (d <= breaks[2][1]) {
+  //   return '#8c96c6';
+  // } else if (d <= breaks[3][1]) {
+  //   return '#8856a7';
+  // } else if (d <= breaks[4][1]) {
+  //   return '#810f7c';
+  // }
+
+  if (d <= breaks[1]) {
     return '#edf8fb';
-  } else if (d <= breaks[1][1]) {
+  } else if (d <= breaks[2]) {
     return '#b3cde3';
-  } else if (d <= breaks[2][1]) {
+  } else if (d <= breaks[3]) {
     return '#8c96c6';
-  } else if (d <= breaks[3][1]) {
+  } else if (d <= breaks[4]) {
     return '#8856a7';
-  } else if (d <= breaks[4][1]) {
+  } else if (d <= breaks[5]) {
     return '#810f7c';
   }
 }
@@ -206,15 +222,21 @@ function updateMap(blockGroups) {
 
   // get the class breaks for the current data attribute
   const breaks = getClassBreaks(blockGroups);
-
+  console.log(breaks);
   // loop through each block layer and update the color and tooltip info
   blockGroups.eachLayer(function (layer) {
     const props = layer.feature.properties;
 
-    // set the fill color of the layer based on its normalized data value
-    layer.setStyle({
-      fillColor: getColor(props[attributeValue] / props[normValue], breaks),
-    });
+    if (attributeValue == 'airbnbs') {
+      // set the fill color of the layer based on its normalized data value
+      layer.setStyle({
+        fillColor: getColor(props[attributeValue] / props[normValue], breaks),
+      });
+    } else {
+      layer.setStyle({
+        fillColor: getColor(props[attributeValue], breaks),
+      });
+    }
 
     // assemble string sequence of info for tooltip
 
@@ -259,14 +281,36 @@ function addLegend(breaks) {
   const legend = $('#legend').html(`<h5>${attributeValue}</h5>`);
 
   // loop through the array of classification break values
-  for (let i = 0; i <= breaks.length - 1; i++) {
-    let color = getColor(breaks[i][0], breaks);
+  for (let i = 0; i <= breaks.length - 2; i++) {
+    // let color = getColor(breaks[i][0], breaks);
+    // if (attributeValue == 'airbnbs') {
+    //   legend.append(
+    //     `<span style="background:${color}"></span>
+    //     <label>${breaks[i][0] * 1000} &mdash;
+    //       ${breaks[i][1] * 1000}</label>`
+    //   );
+    // } else {
+    //   legend.append(
+    //     `<span style="background:${color}"></span>
+    //     <label>${breaks[i][0]} &mdash;
+    //       ${breaks[i][1]}%</label>`
+    //   );
+    // }
 
-    legend.append(
-      `<span style="background:${color}"></span>
-      <label>${(breaks[i][0] * 100).toLocaleString()} &mdash;
-        ${(breaks[i][1] * 100).toLocaleString()}%</label>`
-    );
+    let color = getColor(breaks[i], breaks);
+    if (attributeValue == 'airbnbs') {
+      legend.append(
+        `<span style="background:${color}"></span>
+        <label>${Math.round(breaks[i] * 1000)} &mdash;
+          ${Math.round(breaks[i + 1] * 1000)}</label>`
+      );
+    } else {
+      legend.append(
+        `<span style="background:${color}"></span>
+        <label>${breaks[i]} &mdash;
+          ${breaks[i + 1]}%</label>`
+      );
+    }
   }
 }
 ///////////////////////////////////////////////////////////////////////
@@ -290,4 +334,4 @@ function addUi(blockGroups) {
     console.log(this.value);
     updateMap(blockGroups);
   });
-};
+}
