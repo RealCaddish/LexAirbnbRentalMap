@@ -36,19 +36,33 @@
         <div id="map"></div>
         <div class="pure-button-group">
           <button class="pure-button" id="button-fly-nash">
-            Fly back to Davidson County!
+            Fly back to Davidson County
           </button>
         </div>
       </div>
       <aside id="about" class="col-md-4 col-lg-3 col-xl-2 order-md-1 text-white py-2 pl-3 bg-secondary overflow-auto">
         <section>
           <h3 class="py-2">Housing Occupancy and the Short Term Rental Market</h3>
-          <p>A fan brush is a fantastic piece of equipment. Use it. Make friends with it. We're not trying to teach you
-            a thing to copy. We're just here to teach you a technique, then let you loose into the world. We'll put a
-            happy little sky in here.</p>
-          <p>You are only limited by your imagination. We'll do another happy little painting. Work on one thing at a
-            time. Don't get carried away - we have plenty of time. Look at them little rascals. We'll put all the little
-            clouds in and let them dance around and have fun. You can spend all day playing with mountains.</p>
+          <p>The proliferation of the short-term rental market has been exacerbated by new rental portals such as Airbnb
+            and BRBO which have flooded the residential market. Renters in major cities have found it difficult to find
+            rentals not only because of heightened rent prices, but also a drop in rentals that are available on the
+            market. The reduction of this supply has been largely due to homeowners converting what would be more
+            permanent rental spaces into short-term rentals used by vacationers, people on business trips, and what
+            would otherwise be traditional hotel-centric guests. </p>
+          <p>Nashville is not immune to these changes. In fact, because of its major tourist industry, Nashville's
+            residential neighborhoods have seen a hightened level of short-term conversions affecting rental supply on a
+            level higher than average for other similar-sized metropolitan areas. Municipalities across the nation are
+            dealing with this influx of short-term rentals in various ways depending on many factors related to the
+            nature of the city itself. In order to address the affordability as well as supply of rental properties for
+            the city's inhabitants, this map seeks to contextualize the current occupancy rate in relation to the influx
+            of available short-term rentals from Airbnb.</p>
+          <p> Click on a block group to see more information about that particular region's Airbnb supply.</p>
+          <hr>Data for this map was provided by the following resources. 
+          <ul>
+            <li><a href='http://insideairbnb.com/get-the-data/'><strong>Inside Airbnb</strong></a> </li>
+            <li><a href='https://data.census.gov/cedsci/table?q=S2501&tid=ACSST5Y2020.S2501'><strong>US Census Bureau Occupancy Charactersistics Table for Davidson County, TN</strong></a></li>
+            <li><a href='https://www.census.gov/cgi-bin/geo/shapefiles/index.php'><strong>US Census Tiger/Line Shapefiles</strong></a></li>
+          </ul><hr>
         </section>
       </aside>
     </section>
@@ -56,9 +70,8 @@
     <footer class="row bg-dark text-white py-3">
       <div class="col">
         <ul class="list-unstyled">
-          <li>authored by <a href="https://realcaddish.github.io/">Nathaniel Deaton</a></li>
-          <li>Map Authored in May, 2022</li>
-          <li>data source: <a href="#">data source</a></li>
+          <li>Authored by <a href="https://realcaddish.github.io/">Nathaniel Deaton</a> as part of the <a href='https://newmapsplus.as.uky.edu/'>New Maps Plus Program</a> at the University of Kentucky</li>
+          <li>Created in April, 2022</li>
         </ul>
       </div>
     </footer>
@@ -77,14 +90,14 @@
     </select>
   </div>
 
-  
-<!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
+
+  <!-- Create a div where the graph will take place -->
+  <div id="my_dataviz"></div>
 
   <!--Bootstrap CDN-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-    </script>
+  </script>
   <!--Leaflet CDN -->
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
