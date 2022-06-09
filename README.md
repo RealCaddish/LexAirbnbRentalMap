@@ -71,6 +71,12 @@ The libraries were imported into the Jupyter Notebook to conduct processing and 
  <p>This map is a web browser-based application accessible primarily through a desktop device. The map utilized modern web standards from HTML5, CSS, and JavaScript to create a data visualization via the web. User affordances for the map were provided by the <a href='https://leafletjs.com/'>Leaflet.js</a> library as well as <a href='https://turfjs.org/'> Turf.js</a>. For example, as a user clicks on a block-group, the users is 'flown' to the boundaries of that specific Leaflet layer where Turf populates the Airbnb points that fall directly within that census tract using frontend geoprocessing. </p>
  <p> The <a href='https://github.com/d3/d3-fetch'> D3-fetch </a> module was utilized in order to load the GeoJSON files directly into the Javascript via an AJAX request. For the responsive design, the Bootstrap framework was loaded via a CDN request in the HTML document. The map uses flex containers to organize the contents in such a way that users can understand the UI effectively. Additionally, the <a href='https://simplestatistics.org/'> simple statistics</a> library was used to aggregate data on the fly for the legend build as well.</p>
 
+ #### C. Application Layout 
+ 
+ The layout of the webpage is primarily to help the viewer understand the overlap between airbnb density, vacancy, and occupancy rates in Nashville, Tennessee via a choropoleth web map. Users will find a web-facing map interface that has user affordances, aiding them wit comprehending some of the basic data represented in the map. 
+ <p>Users will find a dropdown box allowing them to choose between choropleth maps that depict airbnbs per occupied housing unit by block group, occupancy percentage, as well as vacancy percentage. Additionally, a legend will be dynamically updated to reflect the changes in these variables. The 
+ 
+
 
 
 ### Useful Links
