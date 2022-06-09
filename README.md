@@ -73,9 +73,10 @@ The libraries were imported into the Jupyter Notebook to conduct processing and 
 
  #### C. Application Layout 
  
- The layout of the webpage is primarily to help the viewer understand the overlap between airbnb density, vacancy, and occupancy rates in Nashville, Tennessee via a choropoleth web map. Users will find a web-facing map interface that has user affordances, aiding them wit comprehending some of the basic data represented in the map. 
- <p>Users will find a dropdown box allowing them to choose between choropleth maps that depict airbnbs per occupied housing unit by block group, occupancy percentage, as well as vacancy percentage. Additionally, a legend will be dynamically updated to reflect the changes in these variables. The 
- 
+ The layout of the webpage primarily serves to help the viewer understand the overlap between Airbnb-density, vacancy, and occupancy rates in Nashville, Tennessee via a choropoleth web map. Users will find a web-facing map interface that has user affordances, aiding them wit comprehending some of the basic data represented in the map. 
+ <p>Users will find a dropdown box allowing them to choose between choropleth maps that depict Airbnbs per occupied housing unit by block group, occupancy percentage, as well as vacancy percentage. Additionally, a legend will be dynamically updated to reflect the changes in these variables.</p>
+ <p> When users click on a block group, a function in JavaScript is triggered which dynamically updates the map to symbolize point locations of Airbnbs in the block group as well as flying the user to the boundaries of it. Additionally, the user will see which block group they are highlighting by a simple mouseover function which highlights the boundary of the block group the cursor is currently on top of. </p>
+
 
 
 
