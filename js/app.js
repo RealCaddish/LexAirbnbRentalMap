@@ -168,20 +168,34 @@ function showPoints(selectedLayer, airbnbListings) {
 //   // loop through visiblePoints
 //   visiblePoints.eachLayer(function (layer) {
 
+<<<<<<< HEAD
 //     // convert the leaflet layer for visiblePoints to a json format 
 //     const data = layer.toGeoJSON
+=======
+    // convert the leaflet layer for visiblePoints to a json format 
+    const data = layer.toGeoJSON
+>>>>>>> bd5e742577e705d9e610fefee6bf949a6728c94c
 
 //     // call function to draw/update chart using D3
 //     const width = 400;
 //     const height = 300;
 //     const margin = { top: 10, bottom: 10, left: 10, right: 10 }
 
+<<<<<<< HEAD
 //     // create svg element
 //     const svg = d3.select('#d3-container')
 //       .append('svg')
 //       .attr('height', height - margin.top - margin.bottom)
 //       .attr('width', width - margin.left - margin.right)
 //       .attr('viewBox', [0, 0, width, height]);
+=======
+    // create svg element
+    const svg = d3.select('#d3-container')
+      .append('svg')
+      .attr('height', height - margin.top - margin.bottom)
+      .attr('width', width - margin.left - margin.right)
+      .attr('viewBox', [0, 0, width, height]);
+>>>>>>> bd5e742577e705d9e610fefee6bf949a6728c94c
 
 //     const x = d3.scaleBand()
 //       .domain(d3.range(visiblePoints.length))
@@ -192,6 +206,7 @@ function showPoints(selectedLayer, airbnbListings) {
 //       .domain([0, 1000])
 //       .range([height - margin.bottom, margin.top]);
 
+<<<<<<< HEAD
 //     svg
 //       .append('g')
 //       .attr('fill', 'royalblue')
@@ -219,6 +234,35 @@ function showPoints(selectedLayer, airbnbListings) {
 //     svg.node()
 //   })
 // }
+=======
+    svg
+      .append('g')
+      .attr('fill', 'royalblue')
+      .selectAll('rect')
+      .data(data.sort((a, b) => d3.descending(a.price, b.price)))
+      .join('rect')
+      .attr('x', (d, i) => x(i))
+      .attr('y', (d) => y(d.price))
+      .attr('height', d => y(0) = y(d.price))
+      .attr('width', x.bandwidth())
+      .attr('class', 'rectangle')
+
+    function xAxis(g) {
+      g.attr('transform', `translate(0, ${height - margin.bottom})`)
+      g.call(d3.axisBottom(x).tickFormat(i => data[i].name))
+        .attr('font-size', '20px')
+    }
+
+    function yAxis(g) {
+      g.attr('transform', `translate(${margin.left}, 0)`)
+        .call(d3.axisLeft(y).ticks(null, data.format))
+        .attr('font-size', '20px')
+    }
+    svg.append('g').call(xAxis)
+    svg.node()
+  })
+}
+>>>>>>> bd5e742577e705d9e610fefee6bf949a6728c94c
 
 
 ///////////////////////////////////////////////////////////////
