@@ -49,8 +49,6 @@ function drawMap(data) {
   const blocksGeoJSON = data[0];
   const listingsGeoJSON = data[1];
 
-
-
   // airbnb point circle options
   var geojsonMarkerOptions = {
     fillColor: 'blue',
@@ -164,49 +162,63 @@ function showPoints(selectedLayer, airbnbListings) {
   });
 };
 
-// create a d3 bar chart to add to a popup for prices of listings in the census tract 
-function analyzeResults(visiblePoints) {
+// // create a d3 bar chart to add to a popup for prices of listings in the census tract 
+// function analyzeResults(visiblePoints) {
 
-  // loop through visiblePoints
-  visiblePoints.eachLayer(function (layer) {
+//   // loop through visiblePoints
+//   visiblePoints.eachLayer(function (layer) {
 
-    // convert the leaflet layer for visiblePoints to a json format 
-    const data = layer.toGeoJSON()
+//     // convert the leaflet layer for visiblePoints to a json format 
+//     const data = layer.toGeoJSON
 
-    // call function to draw/update chart using D3
-    const width = 400;
-    const height = 300;
-    const margin = { top: 10, bottom: 10, left: 10, right: 10 }
+//     // call function to draw/update chart using D3
+//     const width = 400;
+//     const height = 300;
+//     const margin = { top: 10, bottom: 10, left: 10, right: 10 }
 
-    const svg = d3.select('#d3-container')
-      .append('svg')
-      .attr('height', height - margin.top - margin.bottom)
-      .attr('width', width - margin.left - margin.right)
-      .attr('viewBox', [0, 0, width, height]);
+//     // create svg element
+//     const svg = d3.select('#d3-container')
+//       .append('svg')
+//       .attr('height', height - margin.top - margin.bottom)
+//       .attr('width', width - margin.left - margin.right)
+//       .attr('viewBox', [0, 0, width, height]);
 
-    const x = d3.scaleBand()
-      .domain(d3.range(visiblePoints.length))
-      .range([margin.left, width - margin.right])
-      .padding(0.1);
+//     const x = d3.scaleBand()
+//       .domain(d3.range(visiblePoints.length))
+//       .range([margin.left, width - margin.right])
+//       .padding(0.1);
 
-    const y = d3.scaleLinear()
-      .domain([0, 1000])
-      .range([height - margin.bottom, margin.top]);
+//     const y = d3.scaleLinear()
+//       .domain([0, 1000])
+//       .range([height - margin.bottom, margin.top]);
 
-    svg
-      .append('g')
-      .attr('fill', 'royalblue')
-      .selectAll('rect')
-      .data(data.sort((a, b) => d3.descending(a.name, b.price)))
-      .join('rect')
-      .attr('x', (d, i) => x(i))
-      .attr('y', (d) => y(d.price))
-      .attr('height', d => y(0) = y(d.price))
-      .attr('width', x.bandwidth())
+//     svg
+//       .append('g')
+//       .attr('fill', 'royalblue')
+//       .selectAll('rect')
+//       .data(data.sort((a, b) => d3.descending(a.price, b.price)))
+//       .join('rect')
+//       .attr('x', (d, i) => x(i))
+//       .attr('y', (d) => y(d.price))
+//       .attr('height', d => y(0) = y(d.price))
+//       .attr('width', x.bandwidth())
+//       .attr('class', 'rectangle')
 
-    svg.node()
-  })
-}
+//     function xAxis(g) {
+//       g.attr('transform', `translate(0, ${height - margin.bottom})`)
+//       g.call(d3.axisBottom(x).tickFormat(i => data[i].name))
+//         .attr('font-size', '20px')
+//     }
+
+//     function yAxis(g) {
+//       g.attr('transform', `translate(${margin.left}, 0)`)
+//         .call(d3.axisLeft(y).ticks(null, data.format))
+//         .attr('font-size', '20px')
+//     }
+//     svg.append('g').call(xAxis)
+//     svg.node()
+//   })
+// }
 
 
 ///////////////////////////////////////////////////////////////
@@ -229,14 +241,6 @@ function getClassBreaks(blockGroups) {
     });
   }
 
-  // determine similar clusters
-  // const clusters = ss.ckmeans(values, 5);
-  // console.log(clusters);
-  // create an array of the lowest value within each cluster
-  // const breaks = clusters.map(function (cluster) {
-  //   return [cluster[0], cluster.pop()];
-  // });
-
   const breaks = ss.equalIntervalBreaks(values, 5);
   console.log(breaks);
 
@@ -246,21 +250,6 @@ function getClassBreaks(blockGroups) {
 ///////////////////////////////////////////////////////////////
 // Get color of blockgroup
 function getColor(d, breaks) {
-  // function accepts a single normalized data attribute value
-  // and uses a series of conditional statements to determine which
-  // which color value to return to return to the function caller
-
-  // if (d <= breaks[0][1]) {
-  //   return '#edf8fb';
-  // } else if (d <= breaks[1][1]) {
-  //   return '#b3cde3';
-  // } else if (d <= breaks[2][1]) {
-  //   return '#8c96c6';
-  // } else if (d <= breaks[3][1]) {
-  //   return '#8856a7';
-  // } else if (d <= breaks[4][1]) {
-  //   return '#810f7c';
-  // }
 
   if (d <= breaks[1]) {
     return '#edf8fb';
@@ -340,21 +329,6 @@ function addLegend(breaks) {
 
   // loop through the array of classification break values
   for (let i = 0; i <= breaks.length - 2; i++) {
-    // let color = getColor(breaks[i][0], breaks);
-    // if (attributeValue == 'airbnbs') {
-    //   legend.append(
-    //     `<span style="background:${color}"></span>
-    //     <label>${breaks[i][0] * 1000} &mdash;
-    //       ${breaks[i][1] * 1000}</label>`
-    //   );
-    // } else {
-    //   legend.append(
-    //     `<span style="background:${color}"></span>
-    //     <label>${breaks[i][0]} &mdash;
-    //       ${breaks[i][1]}%</label>`
-    //   );
-    // }
-
     let color = getColor(breaks[i], breaks);
     if (attributeValue == 'airbnbs') {
       legend.append(

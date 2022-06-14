@@ -79,7 +79,11 @@ The libraries were imported into the Jupyter Notebook to conduct processing and 
  <p> When users click on a block group, a function in JavaScript is triggered which dynamically updates the map to symbolize point locations of Airbnbs in the block group as well as flying the user to the boundaries of it. Additionally, the user will see which block group they are highlighting by a simple mouseover function which highlights the boundary of the block group the cursor is currently on top of. </p>
 
 
-
+#### D. Thematic Representation 
+<p>The map consists of two primary datasets: census tract polygons and Airbnb point locations. A choropleth map is the primary thematic representation that will be employed to classify three different choropleths that can be selected in a dropdown menu: first, users can view the density of Airbnbs by census tract, next they can view the percentage of housing units that are occupied by census tract, and finally, users can view the rate of vacancy of units by census tract. These datasets lend a perspective of Airbnb's relationship to occupancy and vacancy status for Davidson County.</p>
+<p> Users will also be able to view airbnb point locations as proportionately-drawn circles that indicate the average price per night. This can help users situate the density versus the asking price by census tract in order to show the variation by tract. </p>
+<p> Additionally, users can select a census tract with their cursor which will zoom them to a smaller scale that fits its boundaries. When the user clicks on it, Airbnb points will be populated that fall within that tract using Turf, and their proportions are reflective of the average price (a higher price being a larger radius). Users can also read about Airbnb and more information concerning its intrusion into local rental markets at the metropolitan level. This affords more context for the project itself as well as situates the user with the point and goal of the map.</p>
+<p>
 
 ### Useful Links
 
