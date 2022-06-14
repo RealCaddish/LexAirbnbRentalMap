@@ -82,13 +82,28 @@ The libraries were imported into the Jupyter Notebook to conduct processing and 
 #### D. Thematic Representation 
 <p>The map consists of two primary datasets: census tract polygons and Airbnb point locations. A choropleth map is the primary thematic representation that will be employed to classify three different choropleths that can be selected in a dropdown menu: first, users can view the density of Airbnbs by census tract, next they can view the percentage of housing units that are occupied by census tract, and finally, users can view the rate of vacancy of units by census tract. These datasets lend a perspective of Airbnb's relationship to occupancy and vacancy status for Davidson County.</p>
 <p> Users will also be able to view airbnb point locations as proportionately-drawn circles that indicate the average price per night. This can help users situate the density versus the asking price by census tract in order to show the variation by tract. </p>
+
+#### E. User Interaction 
+<p> As mentioned earlier, users will find a dropdown menu in the top-right of the web map affording them an opportunity to change the choropleth based on Airbnb density, occupancy status, and vacancy status. The purpose of the choropleths is to show the relationship between Airbnb density versus residential characteristics of the city. As such, Airbnb density was calculated as Airbnbs per 1,000 housing units. This standardization was important because the relative number of Airbnbs needed to be aggregated against a relative standard of measure based on housing units. For example, we could not map the raw density of Airbnb units per census tract because if there were more housing units in one tract than another, we could expect to find a higher density of airbnb units. Thus, the 1,000 housing unit-mark was appropriate to standardize across the entire dataset. Users will also find a mouseover tooltip that shows the precise Airbnb density by tract.</p>
 <p> Additionally, users can select a census tract with their cursor which will zoom them to a smaller scale that fits its boundaries. When the user clicks on it, Airbnb points will be populated that fall within that tract using Turf, and their proportions are reflective of the average price (a higher price being a larger radius). Users can also read about Airbnb and more information concerning its intrusion into local rental markets at the metropolitan level. This affords more context for the project itself as well as situates the user with the point and goal of the map.</p>
-<p>
+
+#### F. Aesthetics and Design Considerations 
+The design of the map is fairly straightforward. For colors and fonts, I decided to use Airbnb-like styles to mimic their layout. This helps the users relate to Airbnb even though the purpose it to point out flaws that the company needs to better address. Because Airbnb uses a proprietary font (Cereal), I found Montserrat to be a likewise open-source font that generally matches Cereal.
+<p>For the choropleth, I decided to use purple because it is neutral. Using Airbnb's light red coloration wouldn't be appropriate for housing occupation or vacancy really because it can be alarmist which isn't necessary for this project. </p>
+
+
+#### Conclusion 
+There exists little question that short-term rentals are having a marked effect on the supply of residential housing units. The importance of this topic will only grow as more hosts convert their properties into short-term rentals, leaving renters with few options for places to live. The impact on neighborhoods and communities will only become more palpable so long as municipal governments don't have stringent laws in place to protect residents, or believe that revenue supersedes community engagement. 
+
+This project is only fleeting, as short-term rental data is updated frequently. As such, InsideAirbnb provides only a snapshot of this data that can be used to examine the short-term rental market's effects. A more robust application of this project could provide a better window of opportunity to see local community impacts at a more granular scale, or it could be modified to better correlate housing characteristics against more impactful, relevant Airbnb data.
+
+Though this project is fleeting. Some interesting observations came from the processing of the data provided by InsideAirbnb. First, Airbnb density is primarily located in the downtown area. We shouldn't be surprised to find that there are less residential units there as much of the area is zoned for commercial rather than residential space. Second, a considerable swath of hosts have at least 10 units. The average amount of units owned per host is 3.8, while the max is 134 by Turnkey Vacation Rentals. This should be further examined considering how hosts can monopolize the housing market. Much of this issue has been corrected by cities such as New York where this was a real issue. Perhaps Nashville should consider a similar approach. Lastly, many hotels that list on Airbnb are circumnavigating around hotel identification. For example, Wyndham hotel has a high density of Airbnb listings in one tract on the periphery of the city. Many of their listings aren't being tracked as hotel units even though Airbnb makes it clear that they need to list as such. This no doubt has an impact not just on short-term rental units, but on Airbnb itself. 
+
+Although these considerations should be taken for future endeavors, the hope is that this has provided 'food for thought' to consider this issue more holistically. The hope is that this project can see fresh light and become more robust in its application to better address the effects of the short-term rental market on local communities. 
+
 
 ### Useful Links
-
 <ol>
 <li><b><a href="https://www.census.gov/programs-surveys/acs/library/handbooks/geography.html">American Community Survey: What Data Users Need to Know</a>
 <b>
 <li><a href="http://www.columbia.edu/~sg3637/airbnb_final_analysis.html">Exploratory Data Analysis and Visualization of Airbnb Dataset, 2018</a>
-<li>
