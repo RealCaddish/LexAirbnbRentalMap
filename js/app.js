@@ -1,3 +1,4 @@
+
 // set options for the map object
 const options = {
   zoomSnap: 0.1,
@@ -20,6 +21,7 @@ const listingsGeojson = d3.json('data/geojson/listings_cleaned.geojson');
 const visiblePoints = L.featureGroup().addTo(map);
 const hiddenPoints = L.featureGroup();
 
+
 // promise statement to call an array of data variables then proceed to mapping function
 Promise.all([blocksDataRaw, listingsGeojson]).then(drawMap);
 
@@ -28,7 +30,9 @@ Promise.all([blocksDataRaw, listingsGeojson]).then(drawMap);
 let attributeValue = 'airbnbs';
 let normValue = 'total_unit_sum';
 
+// start of drawing Map function
 function drawMap(data) {
+
   // display Carto basemap tiles with light features and labels
   const tiles = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -45,27 +49,46 @@ function drawMap(data) {
   const blocksGeoJSON = data[0];
   const listingsGeoJSON = data[1];
 
+
+
   // airbnb point circle options
   var geojsonMarkerOptions = {
-    radius: 8,
-    fillColor: '#ff7800',
-    color: '#000',
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 1,
+    fillColor: 'blue',
+    color: 'black',
+    weight: 2,
+    opacity: .8,
+    fillOpacity: .3,
   };
 
   // add airbnb points to map
   var airbnbListings = L.geoJson(listingsGeoJSON, {
-    style: function (feature) {
-      return {
-        color: feature.properties.host_name,
-      };
-    },
     pointToLayer: function (feature, latlng) {
       return L.circleMarker(latlng, geojsonMarkerOptions).bringToFront();
     },
+  }).on({
+    mouseover: function (e) {
+      this.openPopup();
+      this.setStyle({ color: 'yellow' });
+    },
+    mouseout: function (e) {
+      this.closePopup();
+      this.setStyle({ color: '#537898' })
+    }
   });
+
+  // calculation function for proportionality for airnbnb points
+  function calcRadius(val) {
+    const radius = Math.sqrt(val / Math.PI);
+    return radius * 1.4; // adjust .5 as a scale factor 
+  };
+
+  // resize airbnbs based on price 
+  function resizeCircles(airbnbListings) {
+    airbnbListings.eachLayer(function (layer) {
+      const radius = calcRadius(layer.feature.properties.price);
+      layer.setRadius(radius)
+    });
+  }
 
   // create Leaflet data layer and add to map
   const blockGroups = L.geoJson(blocksGeoJSON, {
@@ -85,7 +108,7 @@ function drawMap(data) {
         // change the stroke color and bring that element to the front
         layer.setStyle({
           color: '#ff6e00',
-        });
+        })
       });
 
       // on mousing off layer
@@ -98,7 +121,7 @@ function drawMap(data) {
 
       // zoom to block group on click
       layer.on('click', function (e) {
-        map.flyTo(e.latlng, 13);
+        map.flyTo(e.latlng, 14);
         showPoints(layer, airbnbListings);
       });
     },
@@ -106,7 +129,7 @@ function drawMap(data) {
 
   // fit the map's bounds and zoom level using the counties extent
   map.fitBounds(blockGroups.getBounds(), {
-    padding: [18, 18], // add padding around counties
+    padding: [14, 14], // add padding around counties
   });
 
   // set the coordinates for Davidson County
@@ -119,36 +142,72 @@ function drawMap(data) {
   // function calls to loop through
   updateMap(blockGroups);
   addUi(blockGroups);
-  //flyBack(county)
+  resizeCircles(airbnbListings, 5)
+  analyzeResults(airbnbListings)
 }
 
+// Geoprocessing in browser: select and zoom to bounds of census tract, populate airbnbs within it
 function showPoints(selectedLayer, airbnbListings) {
+  // loop through each airbnb point
   airbnbListings.eachLayer(function (layer) {
+    // convert it to typical GeoJSON
     let pointGeoJSON = layer.toGeoJSON();
+    // for turf, convert the point to a coordinate location
     let point = turf.getCoord(pointGeoJSON);
+    // when user clicks on a tract (selectedLayer), populate the airbnb points within it
     if (turf.booleanPointInPolygon(point, selectedLayer.toGeoJSON())) {
-      //   map.addLayer(layer);
-
-      //   layer
-      //     .setStyle({
-      //       opacity: 1,
-      //       fillOpacity: 1,
-      //     })
-      //     .bringToFront();
-
       visiblePoints.addLayer(layer);
     }
+    // remove points if user clicks on new tract to be populated
+    else
+      visiblePoints.removeLayer(layer);
   });
+};
 
-  analyzeResults();
+// create a d3 bar chart to add to a popup for prices of listings in the census tract 
+function analyzeResults(visiblePoints) {
+
+  // loop through visiblePoints
+  visiblePoints.eachLayer(function (layer) {
+
+    // convert the leaflet layer for visiblePoints to a json format 
+    const data = layer.toGeoJSON()
+
+    // call function to draw/update chart using D3
+    const width = 400;
+    const height = 300;
+    const margin = { top: 10, bottom: 10, left: 10, right: 10 }
+
+    const svg = d3.select('#d3-container')
+      .append('svg')
+      .attr('height', height - margin.top - margin.bottom)
+      .attr('width', width - margin.left - margin.right)
+      .attr('viewBox', [0, 0, width, height]);
+
+    const x = d3.scaleBand()
+      .domain(d3.range(visiblePoints.length))
+      .range([margin.left, width - margin.right])
+      .padding(0.1);
+
+    const y = d3.scaleLinear()
+      .domain([0, 1000])
+      .range([height - margin.bottom, margin.top]);
+
+    svg
+      .append('g')
+      .attr('fill', 'royalblue')
+      .selectAll('rect')
+      .data(data.sort((a, b) => d3.descending(a.name, b.price)))
+      .join('rect')
+      .attr('x', (d, i) => x(i))
+      .attr('y', (d) => y(d.price))
+      .attr('height', d => y(0) = y(d.price))
+      .attr('width', x.bandwidth())
+
+    svg.node()
+  })
 }
 
-function analyzeResults() {
-  // loop through visiblePoints and analyze data attribute
-  // analyze with simple stats
-  // call function to draw/update chart using D3
-  console.log(visiblePoints);
-}
 
 ///////////////////////////////////////////////////////////////
 // get class breaks for data based on airbnbs per block
@@ -239,9 +298,8 @@ function updateMap(blockGroups) {
     }
 
     // assemble string sequence of info for tooltip
-
-    let tooltipInfo = `<b>Tract: ${props.TRACTCE}</b></br>
-      Number of Airbnbs Per 1,000 Housing Units: ${((props[attributeValue] / props[normValue] * 1000))}`;
+    let tooltipInfo = `<strong>Tract: ${props.TRACTCE}</strong></br>
+      Number of Airbnbs Per 1,000 Housing Units:<strong><u>${((props[attributeValue] / props[normValue] * 1000)).toLocaleString()}</strong>`;
 
     // bind tooltip to layer with block-specific information
     layer.bindTooltip(tooltipInfo, {
@@ -335,3 +393,4 @@ function addUi(blockGroups) {
     updateMap(blockGroups);
   });
 }
+

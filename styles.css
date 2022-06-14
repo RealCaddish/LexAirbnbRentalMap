@@ -11,14 +11,20 @@ body {
 h1 {
   font-weight: 800;
   text-align: center;
+  font-family: 'Montserrat', sans-serif;
+
 }
 
 h3 {
   text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
 }
 
 p {
   line-height: 1.7rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
 }
 
 #map {
@@ -65,7 +71,7 @@ p {
 @media (min-width: 768px) {
 
   aside {
-      height: 80vh;
+    height: 80vh;
   }
 }
 
@@ -74,3 +80,12 @@ p {
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {}
+
+a {
+  color: hwb(349 10% 63%);
+}
+
+
+svg {
+  border: 1px solid #000;
+}

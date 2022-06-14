@@ -17,7 +17,7 @@
  <p> The rise and dominance of Airbnbs in the share economy has opened the door to fresh criticism concerning its role in local rental property supply, general property valuations, and its contribution to the problematic effect known as 'touristification.' Housing occupancy status has been greatly affected by the short-term rental market, causing renters and homebuyers to find less supply in historically residential neighborhoods. The effects of short-term rental spaces on housing supply is being freshly examined and has brought newfound approaches for understanding its role in residential neighborhoods. This project seeks to address Nashville, Tennessee's Airbnb footprint and how its effects on rental property supply are permeating throughout the city.  </p>
   <p>By utilizing data supplied by the American Community Survey as well as data provided by Inside Airbnb, this project seeks to understand the affects of Airbnb on local rental property supply by understanding Nashville's vacancy rate, as well as vacancy rate throughout the city.</p>
 
-  ## II. Methodolgy 
+  ## II. Methodology 
 
   #### A. Data 
   In order to examine airbnbs in relation to occupancy/vacancy status, it's important to consider the data sources that will be used to conduct this map. 
