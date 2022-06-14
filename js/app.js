@@ -65,11 +65,9 @@ function drawMap(data) {
     },
   }).on({
     mouseover: function (e) {
-      this.openPopup();
       this.setStyle({ color: 'yellow' });
     },
     mouseout: function (e) {
-      this.closePopup();
       this.setStyle({ color: '#537898' })
     },
   });
