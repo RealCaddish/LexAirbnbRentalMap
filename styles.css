@@ -33,6 +33,7 @@ p {
 }
 
 #legend {
+  font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
   border-radius: 2px;
   max-width: 300px;
@@ -40,6 +41,7 @@ p {
 }
 
 #legend span {
+  font-family: 'Montserrat', sans-serif;
   width: 20px;
   height: 20px;
   float: left;
@@ -52,12 +54,14 @@ p {
 }
 
 #legend label:after {
+  font-family: 'Montserrat', sans-serif;
   content: '';
   display: block;
   clear: both;
 }
 
 #button-fly-nash {
+  font-family: 'Montserrat', sans-serif;
   font-size: 85%;
   color: white;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -88,4 +92,12 @@ a {
 
 svg {
   border: 1px solid #000;
+}
+
+.rectangle hover {
+  opacity: .66;
+};
+
+dropdown-ui {
+  font-family: 'Montserrat', sans-serif;
 }
